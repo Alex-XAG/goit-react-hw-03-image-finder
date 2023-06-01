@@ -2,9 +2,9 @@ const BASE_URL = 'https://pixabay.com/api/';
 
 const API = '32213066-8c27353e21dcb9ee734ab239c';
 
-//pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12
-
-export const fetchImages = async ({ searchQuery, page }) => {
+// https://pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12
+// `${BASE_URL}?${params}`
+export const fetchImages = async (searchQuery, page) => {
   const params = new URLSearchParams({
     q: searchQuery,
     page,
@@ -15,8 +15,10 @@ export const fetchImages = async ({ searchQuery, page }) => {
   });
 
   const response = await fetch(`${BASE_URL}?${params}`);
+  console.log(searchQuery, page);
   if (!response.ok) {
     throw new Error("Can't find searching images ((( ");
   }
-  return response.json();
+  const resposeList = response.json();
+  return resposeList;
 };
