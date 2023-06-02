@@ -11,12 +11,21 @@ export class SearchBar extends React.Component {
     this.props.handleChangeQuery(this.state.searchQuery);
   };
 
+  handleSubmitQuery = async e => {
+    e.preventDefault();
+
+    await this.props.onSubmit();
+    this.reset();
+  };
+  reset = () => {
+    this.setState({ searchQuery: '' });
+  };
+
   render() {
     const { searchQuery } = this.state;
-    const { onSubmit } = this.props;
     return (
       <header className="searchbar">
-        <form className="form" onSubmit={onSubmit}>
+        <form className="form" onSubmit={this.handleSubmitQuery}>
           <button type="submit" className="button">
             <span className="button-label">Search</span>
           </button>
@@ -38,5 +47,4 @@ export class SearchBar extends React.Component {
 
 SearchBar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  handleChangeQuery: PropTypes.func.isRequired,
 };

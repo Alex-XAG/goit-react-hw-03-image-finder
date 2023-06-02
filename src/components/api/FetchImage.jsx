@@ -15,7 +15,6 @@ export const fetchImages = async (searchQuery, page) => {
   });
 
   const response = await fetch(`${BASE_URL}?${params}`);
-  console.log(searchQuery, page);
   if (!response.ok) {
     throw new Error("Can't find searching images ((( ");
   }

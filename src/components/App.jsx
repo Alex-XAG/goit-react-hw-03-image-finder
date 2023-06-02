@@ -10,20 +10,13 @@ export class App extends React.Component {
     searchQuery: '',
     page: 1,
     images: [],
+    per_page: 12,
+    totalPages: null,
   };
 
   async componentDidMount() {
-    const { searchQuery, page } = this.state;
-    if (this.state.images.length === 0) {
-      try {
-        const getImages = await fetchImages(searchQuery, page).then(
-          resArr => resArr.hits
-        );
-        this.setState({ images: [...getImages] });
-      } catch (error) {
-        throw new Error("Can't find searching images ((( ");
-      }
-    }
+    this.handleFetchImages();
+    this.getTotalPages();
   }
 
   // componentDidUpdate(prevProps, prevState) {
@@ -35,8 +28,13 @@ export class App extends React.Component {
     this.setState({ searchQuery: query });
   }, 500);
 
-  handleSubmitQuery = async e => {
-    e.preventDefault();
+  handleSubmitQuery = async () => {
+    await this.handleFetchImages();
+
+    this.setState({ page: 1 });
+  };
+
+  handleFetchImages = async () => {
     const { searchQuery, page } = this.state;
     try {
       const getImages = await fetchImages(searchQuery, page).then(
@@ -47,8 +45,6 @@ export class App extends React.Component {
       throw new Error("Can't find searching images ((( ");
     }
   };
-
-  handleFetchImages = async () => {};
 
   handleLoadMoreBtn = async () => {
     await this.setState(prevState => ({ page: prevState.page + 1 }));
@@ -65,12 +61,17 @@ export class App extends React.Component {
     }
   };
 
-  render() {
-    const { page, images, per_page, searchQuery } = this.state;
-
-    const getImages = fetchImages(searchQuery, page).then(
-      resArr => resArr.hits
+  getTotalPages = async () => {
+    const { per_page, page, searchQuery } = this.state;
+    const getImages = await fetchImages(searchQuery, page).then(
+      resArr => resArr.totalHits
     );
+    const totalPages = Math.ceil(getImages / per_page);
+    this.setState({ totalPages: totalPages });
+  };
+
+  render() {
+    const { images } = this.state;
 
     const showLoadMoreBtn = images.length !== 0;
 
