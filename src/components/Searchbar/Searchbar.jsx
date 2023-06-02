@@ -1,20 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 export class SearchBar extends React.Component {
   state = {
     searchQuery: '',
   };
 
-  handleInput = async ({ target }) => {
-    await this.setState({ searchQuery: target.value });
-    this.props.handleChangeQuery(this.state.searchQuery);
+  handleInput = ({ target }) => {
+    this.setState({ searchQuery: target.value });
   };
 
-  handleSubmitQuery = async e => {
+  handleSubmitQuery = e => {
     e.preventDefault();
 
-    await this.props.onSubmit();
+    if (this.state.searchQuery.trim() === '') {
+      toast.error('Input search query please!!!', {
+        position: toast.POSITION.TOP_LEFT,
+      });
+      return;
+    }
+
+    this.props.onSubmit(this.state.searchQuery);
     this.reset();
   };
   reset = () => {
