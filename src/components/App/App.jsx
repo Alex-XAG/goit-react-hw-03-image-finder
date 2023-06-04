@@ -1,9 +1,10 @@
 import React from 'react';
+import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
+import { fetchImages } from '../api/FetchImage';
+import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SearchBar } from '../Searchbar/Searchbar';
-import { fetchImages } from '../api/FetchImage';
-// import debounce from 'lodash.debounce';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { AppStyle } from './App.styled';
 
@@ -11,19 +12,43 @@ export class App extends React.Component {
   state = {
     searchQuery: '',
     page: 1,
+    showBtn: false,
+    images: [],
+    status: 'idle',
   };
+
+  async componentDidUpdate(prevProps, prevState) {
+    const { searchQuery, page } = this.state;
+
+    if (prevState.searchQuery !== searchQuery || prevState.page !== page) {
+      this.setState({ status: 'pending' });
+      try {
+        await fetchImages(searchQuery, page).then(images => {
+          if (!images.hits.length) {
+            this.setState({ status: 'rejected' });
+            return;
+          }
+          this.setState(prevState => ({
+            images:
+              page !== 1
+                ? [...prevState.images, ...images.hits]
+                : [...images.hits],
+            showBtn:
+              images.hits.length !== 0 && page < Math.ceil(images.total / 12),
+            status: 'resolved',
+          }));
+        });
+      } catch (error) {
+        toast.error(error.message, {
+          position: toast.POSITION.TOP_LEFT,
+        });
+        return;
+      }
+    }
+  }
 
   handleSubmitQuery = query => {
     this.setState({ searchQuery: query, page: 1 });
-  };
-
-  getTotalPages = async () => {
-    const { per_page, page, searchQuery } = this.state;
-    const getImages = await fetchImages(searchQuery, page).then(
-      resArr => resArr.totalHits
-    );
-    const totalPages = Math.ceil(getImages / per_page);
-    this.setState({ totalPages: totalPages });
   };
 
   handleLoadMoreBtn = () => {
@@ -31,7 +56,7 @@ export class App extends React.Component {
   };
 
   render() {
-    const { searchQuery, page } = this.state;
+    const { status, images, showBtn } = this.state;
 
     return (
       <AppStyle
@@ -46,12 +71,11 @@ export class App extends React.Component {
       >
         <SearchBar onSubmit={this.handleSubmitQuery} />
 
-        <ImageGallery
-          page={page}
-          handleLoadMoreBtn={this.handleLoadMoreBtn}
-          toggleModal={this.toggleModal}
-          searchQuery={searchQuery}
-        />
+        <ImageGallery status={status} images={images} />
+
+        {showBtn && (
+          <ButtonLoadMore status={status} onClick={this.handleLoadMoreBtn} />
+        )}
 
         <ToastContainer />
       </AppStyle>

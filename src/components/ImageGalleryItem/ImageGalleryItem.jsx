@@ -29,12 +29,7 @@ export class ImageGalleryItem extends React.Component {
         />
         {showModal && (
           <Modal handleCloseModal={this.toggleModal}>
-            <GalleryLargeImage
-              src={image.largeImageURL}
-              alt={image.tags}
-              // width="1000"
-              // height="800"
-            />
+            <GalleryLargeImage src={image.largeImageURL} alt={image.tags} />
           </Modal>
         )}
       </GalleryItem>
