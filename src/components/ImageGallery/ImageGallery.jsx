@@ -10,14 +10,14 @@ export class ImageGallery extends React.Component {
   state = {
     images: [],
     status: 'idle',
-    page: 1,
+
+    showBtn: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    const { searchQuery } = this.props;
-    const { page } = this.state;
+    const { searchQuery, page } = this.props;
 
-    if (prevProps.searchQuery !== searchQuery) {
+    if (prevProps.searchQuery !== searchQuery || prevProps.page !== page) {
       // console.log('changes');
       // console.log(prevProps.searchQuery);
       // console.log(searchQuery);
@@ -25,11 +25,19 @@ export class ImageGallery extends React.Component {
       this.setState({ status: 'pending' });
       try {
         await fetchImages(searchQuery, page).then(images => {
-          if (images.hits.length > 1) {
-            this.setState({ images: images.hits, status: 'resolved' });
+          if (!images.hits.length) {
+            this.setState({ status: 'rejected' });
             return;
           }
-          this.setState({ status: 'rejected' });
+          this.setState(prevState => ({
+            images:
+              page !== 1
+                ? [...prevState.images, ...images.hits]
+                : [...images.hits],
+            showBtn:
+              images.hits.length !== 0 && page < Math.ceil(images.total / 12),
+            status: 'resolved',
+          }));
         });
       } catch (error) {
         toast.error(error.message, {
@@ -40,27 +48,11 @@ export class ImageGallery extends React.Component {
     }
   }
 
-  handleLoadMoreBtn = async () => {
-    await this.setState(prevState => ({ page: prevState.page + 1 }));
-    const { page } = this.state;
-    const { searchQuery } = this.props;
-    try {
-      const getImages = await fetchImages(searchQuery, page).then(
-        resArr => resArr.hits
-      );
-      console.log(getImages);
-      this.setState(prevState => ({
-        images: [...prevState.images, ...getImages],
-      }));
-    } catch (error) {
-      throw new Error("Can't find searching images ((( ");
-    }
-  };
-
   render() {
-    const { images, status } = this.state;
+    const { images, status, showBtn } = this.state;
+    const { handleLoadMoreBtn } = this.props;
 
-    const showLoadMoreBtn = images.length !== 0;
+    // const showLoadMoreBtn = images.length !== 0;
 
     if (status === 'idle') {
       return <h2>Insert query!!!</h2>;
@@ -81,8 +73,8 @@ export class ImageGallery extends React.Component {
               <ImageGalleryItem key={image.id} image={image} />
             ))}
           </ImageList>
-          {showLoadMoreBtn && (
-            <ButtonLoadMore status={status} onClick={this.handleLoadMoreBtn} />
+          {showBtn && (
+            <ButtonLoadMore status={status} onClick={handleLoadMoreBtn} />
           )}
         </>
       );

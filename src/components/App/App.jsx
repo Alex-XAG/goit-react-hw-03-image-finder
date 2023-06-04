@@ -10,8 +10,7 @@ import { AppStyle } from './App.styled';
 export class App extends React.Component {
   state = {
     searchQuery: '',
-    per_page: 12,
-    totalPages: null,
+    page: 1,
   };
 
   handleSubmitQuery = query => {
@@ -27,8 +26,12 @@ export class App extends React.Component {
     this.setState({ totalPages: totalPages });
   };
 
+  handleLoadMoreBtn = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
+
   render() {
-    const { searchQuery } = this.state;
+    const { searchQuery, page } = this.state;
 
     return (
       <AppStyle
@@ -44,6 +47,8 @@ export class App extends React.Component {
         <SearchBar onSubmit={this.handleSubmitQuery} />
 
         <ImageGallery
+          page={page}
+          handleLoadMoreBtn={this.handleLoadMoreBtn}
           toggleModal={this.toggleModal}
           searchQuery={searchQuery}
         />
