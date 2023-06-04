@@ -1,6 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { AiOutlineSearch } from 'react-icons/ai';
 import { toast } from 'react-toastify';
+import {
+  SearchFormButton,
+  SearchFormInput,
+  SearchForm,
+  SearchBarHeader,
+} from './SearchBar.styled';
 
 export class SearchBar extends React.Component {
   state = {
@@ -31,14 +38,13 @@ export class SearchBar extends React.Component {
   render() {
     const { searchQuery } = this.state;
     return (
-      <header className="searchbar">
-        <form className="form" onSubmit={this.handleSubmitQuery}>
-          <button type="submit" className="button">
-            <span className="button-label">Search</span>
-          </button>
+      <SearchBarHeader>
+        <SearchForm onSubmit={this.handleSubmitQuery}>
+          <SearchFormButton type="submit">
+            <AiOutlineSearch />
+          </SearchFormButton>
 
-          <input
-            className="input"
+          <SearchFormInput
             type="text"
             autoComplete="off"
             autoFocus
@@ -46,8 +52,8 @@ export class SearchBar extends React.Component {
             value={searchQuery}
             onChange={this.handleInput}
           />
-        </form>
-      </header>
+        </SearchForm>
+      </SearchBarHeader>
     );
   }
 }

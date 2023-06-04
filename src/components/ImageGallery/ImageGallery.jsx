@@ -1,8 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
-import { Button } from '../Button/Button';
+import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
 import { fetchImages } from '../api/FetchImage';
 import { toast } from 'react-toastify';
+import { ImageList } from './ImageGallery.styled';
 
 export class ImageGallery extends React.Component {
   state = {
@@ -46,6 +48,7 @@ export class ImageGallery extends React.Component {
       const getImages = await fetchImages(searchQuery, page).then(
         resArr => resArr.hits
       );
+      console.log(getImages);
       this.setState(prevState => ({
         images: [...prevState.images, ...getImages],
       }));
@@ -60,39 +63,33 @@ export class ImageGallery extends React.Component {
     const showLoadMoreBtn = images.length !== 0;
 
     if (status === 'idle') {
-      return (
-        <li>
-          <h2>Insert query!!!</h2>
-        </li>
-      );
+      return <h2>Insert query!!!</h2>;
     }
     if (status === 'pending') {
-      return (
-        <li>
-          <h3>Loading...</h3>
-        </li>
-      );
+      return <h3>Loading...</h3>;
     }
     if (status === 'rejected') {
       return (
-        <li>
-          <h3>
-            Your query did't give any results, please, try other request!!!
-          </h3>
-        </li>
+        <h3>Your query did't give any results, please, try other request!!!</h3>
       );
     }
     if (status === 'resolved') {
       return (
         <>
-          <ul className="gallery">
+          <ImageList>
             {images.map(image => (
               <ImageGalleryItem key={image.id} image={image} />
             ))}
-          </ul>
-          {showLoadMoreBtn && <Button onClick={this.handleLoadMoreBtn} />}
+          </ImageList>
+          {showLoadMoreBtn && (
+            <ButtonLoadMore status={status} onClick={this.handleLoadMoreBtn} />
+          )}
         </>
       );
     }
   }
 }
+
+ImageGallery.propTypes = {
+  searchQuery: PropTypes.string.isRequired,
+};
