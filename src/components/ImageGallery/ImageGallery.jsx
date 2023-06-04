@@ -5,6 +5,7 @@ import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
 import { fetchImages } from '../api/FetchImage';
 import { toast } from 'react-toastify';
 import { ImageList } from './ImageGallery.styled';
+import { InfinitySpin } from 'react-loader-spinner';
 
 export class ImageGallery extends React.Component {
   state = {
@@ -58,7 +59,7 @@ export class ImageGallery extends React.Component {
       return <h2>Insert query!!!</h2>;
     }
     if (status === 'pending') {
-      return <h3>Loading...</h3>;
+      return <InfinitySpin width="200" color="#4fa94d" />;
     }
     if (status === 'rejected') {
       return (

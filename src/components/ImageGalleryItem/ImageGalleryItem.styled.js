@@ -16,3 +16,9 @@ export const GalleryItemImage = styled.img`
     cursor: zoom-in;
   }
 `;
+
+export const GalleryLargeImage = styled.img`
+  width: calc(100%- 48px);
+  height: calc(100%- 48px);
+  object-fit: cover;
+`;

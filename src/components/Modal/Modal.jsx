@@ -12,27 +12,20 @@ const modalRoot = document.querySelector('#modal-root');
 
 export class Modal extends React.Component {
   componentDidMount() {
-    // console.log('Modal componentDidMount');
-
     window.addEventListener('keydown', this.handleKeydown);
   }
 
   componentWillUnmount() {
-    // console.log('Modal componentWillUnmount');
-
     window.removeEventListener('keydown', this.handleKeydown);
   }
 
   handleKeydown = e => {
     if (e.code === 'Escape') {
-      // console.log('if we tap to Escape we need to close modal');
       this.props.handleCloseModal();
     }
   };
 
   handleBackdropClick = evt => {
-    // console.log('Click');
-
     if (evt.currentTarget === evt.target) {
       this.props.handleCloseModal();
     }

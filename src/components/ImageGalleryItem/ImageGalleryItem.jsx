@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Modal } from 'components/Modal/Modal';
-import { GalleryItem } from './ImageGalleryItem.styled';
+import { GalleryItem, GalleryLargeImage } from './ImageGalleryItem.styled';
 
 export class ImageGalleryItem extends React.Component {
   state = {
@@ -29,11 +29,11 @@ export class ImageGalleryItem extends React.Component {
         />
         {showModal && (
           <Modal handleCloseModal={this.toggleModal}>
-            <img
+            <GalleryLargeImage
               src={image.largeImageURL}
               alt={image.tags}
-              width="800"
-              height="600"
+              // width="1000"
+              // height="800"
             />
           </Modal>
         )}
