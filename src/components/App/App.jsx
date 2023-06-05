@@ -1,4 +1,5 @@
 import React from 'react';
+import { InfinitySpin } from 'react-loader-spinner';
 import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
 import { fetchImages } from '../api/FetchImage';
 import { toast } from 'react-toastify';
@@ -72,9 +73,16 @@ export class App extends React.Component {
         <SearchBar onSubmit={this.handleSubmitQuery} />
 
         <ImageGallery status={status} images={images} />
+        {status === 'idle' && <h2>Insert query!!!</h2>}
 
         {showBtn && (
           <ButtonLoadMore status={status} onClick={this.handleLoadMoreBtn} />
+        )}
+        {status === 'pending' && <InfinitySpin width="300" color="#4fa94d" />}
+        {status === 'rejected' && (
+          <h3>
+            Your query did't give any results, please, try other request!!!
+          </h3>
         )}
 
         <ToastContainer />
